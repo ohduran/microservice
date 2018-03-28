@@ -1,0 +1,4 @@
+- Return as JSON object - and GET a json object (location=json)
+- DELETE method for a task
+- How to parse arguments to POST tasks?
+- l

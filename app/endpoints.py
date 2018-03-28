@@ -6,18 +6,18 @@ from app import app, api
 
 tasks = {
 
-     1:{
+     1: {
         'task_id': 1,
         'title': u'Build an API',
         'description': "",
         'done': False,
-    },
-     2:{
+        },
+     2: {
         'task_id': 2,
         'title': u'Meeting with friends',
         'description': "Pub around the corner",
         'done': False,
-    },
+        },
 }
 
 
@@ -43,11 +43,10 @@ class TaskListAPI(Resource):
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str, #required=True,
+        self.reqparse.add_argument('title', type=str,  # required=True,
                                    help='No task title provided')
-                                   #location='json')
         self.reqparse.add_argument('description',
-                                   type=str, default="")#, location='json')
+                                   type=str, default="")  # , location='json')
         super(TaskListAPI, self).__init__()
 
     def get(self):
@@ -82,10 +81,9 @@ class TaskAPI(Resource):
     def put(self, task_id):
         """Update a task by task_id method."""
         task = tasks[task_id]
-        args = self.reqparse.parse_args(strict=True)
-        for key, value in args.iteritems():
-            if value is not None:
-                task[key] = value
+        args = self.reqparse.parse_args()
+        task = {'title': args['title']}
+        tasks[task_id] = task
         return {'task': task}
 
 

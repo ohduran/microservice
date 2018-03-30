@@ -1,10 +1,9 @@
+#!environment/bin/python3
 from flask import request
 from flask_restful import Resource, abort, reqparse
 
 from app import app, api
-
 tasks = {
-
      1: {
         'task_id': 1,
         'title': u'Build an API',
@@ -88,10 +87,11 @@ class TaskAPI(Resource):
         tasks[task_id] = task
         return {'task': task}
 
-#
-# task = {key: args[key] for key in args.keys()}
-# tasks[task_id] = task
-# return {'task': tasks[task_id]}
+    def delete(self, task_id):
+        """Delete a task with task_id method."""
+        del tasks[task_id]
+        return ""
+
 
 api.add_resource(UserAPI, '/users/<int:id>', endpoint='user')
 api.add_resource(TaskListAPI, '/tasks', endpoint='all_tasks')

@@ -1,6 +1,5 @@
 from flask import request
-from flask_restful import Resource, abort
-from flask.ext.restful import reqparse
+from flask_restful import Resource, abort, reqparse
 
 from app import app, api
 
@@ -43,10 +42,11 @@ class TaskListAPI(Resource):
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str,  # required=True,
+        self.reqparse.add_argument('title', type=str,  required=True,
                                    help='No task title provided')
         self.reqparse.add_argument('description',
-                                   type=str, default="")  # , location='json')
+                                   type=str, default="")
+        self.reqparse.add_argument('done', type=bool, default=False)
         super(TaskListAPI, self).__init__()
 
     def get(self):
@@ -57,8 +57,9 @@ class TaskListAPI(Resource):
         """Post a new task method."""
         args = self.reqparse.parse_args()
         task_id = int(max(tasks.keys())) + 1
-        tasks[task_id] = {'title': args['title']}
-        return tasks[task_id], 201
+        task = {key: args[key] for key in args.keys()}
+        tasks[task_id] = task
+        return {'task': tasks[task_id]}
 
 
 class TaskAPI(Resource):
@@ -67,25 +68,30 @@ class TaskAPI(Resource):
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str) #location='json')
-        self.reqparse.add_argument('description', type=str)#location='json')
-        self.reqparse.add_argument('done', type=bool)#location='json')
+        self.reqparse.add_argument('title', type=str)
+        self.reqparse.add_argument('description', type=str)
+        self.reqparse.add_argument('done', type=bool)
         super(TaskAPI, self).__init__()
 
     def get(self, task_id):
         """Get task by task_id method."""
         task = tasks[task_id]
-        # task = [t for t in tasks if t['task_id'] == task_id]
         return {'task': task}
 
     def put(self, task_id):
         """Update a task by task_id method."""
         task = tasks[task_id]
         args = self.reqparse.parse_args()
-        task = {'title': args['title']}
+        for key in args.keys():
+            if args[key] is not None:
+                task[key] = args[key]
         tasks[task_id] = task
         return {'task': task}
 
+#
+# task = {key: args[key] for key in args.keys()}
+# tasks[task_id] = task
+# return {'task': tasks[task_id]}
 
 api.add_resource(UserAPI, '/users/<int:id>', endpoint='user')
 api.add_resource(TaskListAPI, '/tasks', endpoint='all_tasks')

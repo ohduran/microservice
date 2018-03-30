@@ -2,7 +2,7 @@
 import unittest
 import os
 
-from requests import put, get, post, delete
+# from requests import put, get, post, delete
 from config import basedir
 from app import app, db
 from app.models import User, Task

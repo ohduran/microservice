@@ -1,8 +1,13 @@
 #!environment/bin/python3
 from flask import request, jsonify
 from flask_restful import Resource, abort, reqparse
+from flask_login import current_user, login_user
+from app import app, api, auth
 
-from app import app, api
+users = {
+    'alvaro': 'duran',
+    'admin': 'sudo',
+}
 tasks = {
      1: {
         'task_id': 1,
@@ -22,11 +27,31 @@ tasks = {
 class UserAPI(Resource):
     """User endpoint."""
 
-    def get(self, id):
+    def __init__(self):
+        """Constructor: Handle Arguments."""
+        self.reqparse = reqparse.RequestParser()
+        self.reqparse.add_argument('username', type=str,  required=True,
+                                   help='No username provided',
+                                   location='json')
+        self.reqparse.add_argument('password', type=str,  required=True,
+                                   help='No password provided',
+                                   location='json')
+        super(UserAPI, self).__init__()
+
+    @auth.get_password
+    def get(self,):
         """Get method."""
-        pass
+        args = self.reqparse.parse_args()
+        username = args['username']
+        if username in users:
+            return users.get(username)
+        return None
 
     def put(self, id):
+        """Authenticate."""
+        pass
+
+    def post(self, id):
         """Put method."""
         pass
 
@@ -41,11 +66,13 @@ class TaskListAPI(Resource):
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str,  required=True, location='json',
-                                   help='No task title provided')
+        self.reqparse.add_argument('title', type=str,  required=True,
+                                   help='No task title provided',
+                                   location='json')
         self.reqparse.add_argument('description', location='json',
                                    type=str, default="")
-        self.reqparse.add_argument('done', type=bool, default=False, location='json')
+        self.reqparse.add_argument('done', type=bool, default=False,
+                                   location='json')
         super(TaskListAPI, self).__init__()
 
     def get(self):
@@ -93,7 +120,7 @@ class TaskAPI(Resource):
         return jsonify("")
 
 
-api.add_resource(UserAPI, '/users/<int:id>', endpoint='user')
+api.add_resource(UserAPI, '/users', endpoint='user')
 api.add_resource(TaskListAPI, '/tasks', endpoint='all_tasks')
 api.add_resource(TaskAPI, '/tasks/<int:task_id>', endpoint='task')
 

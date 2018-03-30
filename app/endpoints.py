@@ -1,5 +1,5 @@
 #!environment/bin/python3
-from flask import request
+from flask import request, jsonify
 from flask_restful import Resource, abort, reqparse
 
 from app import app, api
@@ -41,16 +41,16 @@ class TaskListAPI(Resource):
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str,  required=True,
+        self.reqparse.add_argument('title', type=str,  required=True, location='json',
                                    help='No task title provided')
-        self.reqparse.add_argument('description',
+        self.reqparse.add_argument('description', location='json',
                                    type=str, default="")
-        self.reqparse.add_argument('done', type=bool, default=False)
+        self.reqparse.add_argument('done', type=bool, default=False, location='json')
         super(TaskListAPI, self).__init__()
 
     def get(self):
         """Get ALL tasks method."""
-        return tasks
+        return jsonify(tasks)
 
     def post(self):
         """Post a new task method."""
@@ -58,7 +58,7 @@ class TaskListAPI(Resource):
         task_id = int(max(tasks.keys())) + 1
         task = {key: args[key] for key in args.keys()}
         tasks[task_id] = task
-        return {'task': tasks[task_id]}
+        return jsonify({'task': tasks[task_id]})
 
 
 class TaskAPI(Resource):
@@ -67,15 +67,15 @@ class TaskAPI(Resource):
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str)
-        self.reqparse.add_argument('description', type=str)
-        self.reqparse.add_argument('done', type=bool)
+        self.reqparse.add_argument('title', type=str, location='json')
+        self.reqparse.add_argument('description', type=str, location='json')
+        self.reqparse.add_argument('done', type=bool, location='json')
         super(TaskAPI, self).__init__()
 
     def get(self, task_id):
         """Get task by task_id method."""
         task = tasks[task_id]
-        return {'task': task}
+        return jsonify({'task': task})
 
     def put(self, task_id):
         """Update a task by task_id method."""
@@ -85,12 +85,12 @@ class TaskAPI(Resource):
             if args[key] is not None:
                 task[key] = args[key]
         tasks[task_id] = task
-        return {'task': task}
+        return jsonify({'task': task})
 
     def delete(self, task_id):
         """Delete a task with task_id method."""
         del tasks[task_id]
-        return ""
+        return jsonify("")
 
 
 api.add_resource(UserAPI, '/users/<int:id>', endpoint='user')

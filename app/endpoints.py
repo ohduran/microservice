@@ -4,6 +4,7 @@ from flask_restful import Resource, abort, reqparse
 from flask_login import current_user, login_user
 from app import app, api, auth
 
+
 users = {
     'alvaro': 'duran',
     'admin': 'sudo',
@@ -31,21 +32,10 @@ class UserAPI(Resource):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('username', type=str,  required=True,
-                                   help='No username provided',
-                                   location='json')
+                                   help='No username provided')
         self.reqparse.add_argument('password', type=str,  required=True,
-                                   help='No password provided',
-                                   location='json')
+                                   help='No password provided')
         super(UserAPI, self).__init__()
-
-    @auth.get_password
-    def get(self,):
-        """Get method."""
-        args = self.reqparse.parse_args()
-        username = args['username']
-        if username in users:
-            return users.get(username)
-        return None
 
     def put(self, id):
         """Authenticate."""
@@ -63,16 +53,16 @@ class UserAPI(Resource):
 class TaskListAPI(Resource):
     """All tasks endpoint."""
 
+   #decorators = [auth.login_required]
+
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('title', type=str,  required=True,
-                                   help='No task title provided',
-                                   location='json')
-        self.reqparse.add_argument('description', location='json',
+                                   help='No task title provided')
+        self.reqparse.add_argument('description',
                                    type=str, default="")
-        self.reqparse.add_argument('done', type=bool, default=False,
-                                   location='json')
+        self.reqparse.add_argument('done', type=bool, default=False)
         super(TaskListAPI, self).__init__()
 
     def get(self):
@@ -91,12 +81,14 @@ class TaskListAPI(Resource):
 class TaskAPI(Resource):
     """Particular task endpoint."""
 
+    #decorators = [auth.login_required]
+
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('title', type=str, location='json')
-        self.reqparse.add_argument('description', type=str, location='json')
-        self.reqparse.add_argument('done', type=bool, location='json')
+        self.reqparse.add_argument('title', type=str)
+        self.reqparse.add_argument('description', type=str)
+        self.reqparse.add_argument('done', type=bool)
         super(TaskAPI, self).__init__()
 
     def get(self, task_id):
@@ -120,9 +112,33 @@ class TaskAPI(Resource):
         return jsonify("")
 
 
+class MarkTaskAsDoneAPI(Resource):
+        """Mark a task as Done endpoint."""
+
+        def __init__(self):
+                """Constructor: Handle Arguments."""
+                self.reqparse = reqparse.RequestParser()
+                self.reqparse.add_argument('done', type=bool, default=True)
+                super(MarkTaskAsDoneAPI, self).__init__()
+
+        def put(self, task_id):
+                """Mark task as done by task_id."""
+                task = tasks[task_id]
+                args = self.reqparse.parse_args()
+                args = {
+                        'done': True,
+                }
+                for key in args.keys():
+                    if args[key] is not None:
+                        task[key] = args[key]
+                tasks[task_id] = task
+                return jsonify({'task': task})
+
+
 api.add_resource(UserAPI, '/users', endpoint='user')
 api.add_resource(TaskListAPI, '/tasks', endpoint='all_tasks')
 api.add_resource(TaskAPI, '/tasks/<int:task_id>', endpoint='task')
+api.add_resource(TaskAPI, '/markasdone/<int:task_id>', endpoint='markasdone')
 
 
 if __name__ == '__main__':

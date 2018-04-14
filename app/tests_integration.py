@@ -2,8 +2,8 @@
 from requests import put, get, post, delete
 
 """Authenticate first."""
-start_get = get('http://127.0.0.1:5000/users', data=dict(username='alvaro')).json()
-print(start_get)
+# start_get = get('http://127.0.0.1:5000/users', data=dict(username='alvaro')).json()
+# print(start_get)
 
 """ GET tasks"""
 start_get = get('http://127.0.0.1:5000/tasks').json()
@@ -42,6 +42,6 @@ else:
     print("Check initial and final state.")
 
 """Mark task/task_id as DONE"""
-# print(put('http://127.0.0.1:5000/markasdone/2').json())
-print('Mark task 2 as done', put('http://127.0.0.1:5000/tasks/2',
-                                 data=dict(done=True)).json())
+#print(put('http://127.0.0.1:5000/markasdone/2').json())
+print('Mark as done', put('http://127.0.0.1:5000/markasdone/2',
+          data=dict(done=True)).json())

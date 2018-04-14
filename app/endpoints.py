@@ -88,7 +88,7 @@ class TaskAPI(Resource):
         self.reqparse = reqparse.RequestParser()
         self.reqparse.add_argument('title', type=str)
         self.reqparse.add_argument('description', type=str)
-        self.reqparse.add_argument('done', type=bool)
+        self.reqparse.add_argument('done', type=bool, default=False)
         super(TaskAPI, self).__init__()
 
     def get(self, task_id):
@@ -112,7 +112,7 @@ class TaskAPI(Resource):
         return jsonify("")
 
 
-class MarkTaskAsDoneAPI(Resource):
+class MarkTaskAsDoneAPI(TaskAPI):
         """Mark a task as Done endpoint."""
 
         def __init__(self):
@@ -121,18 +121,21 @@ class MarkTaskAsDoneAPI(Resource):
                 self.reqparse.add_argument('done', type=bool, default=True)
                 super(MarkTaskAsDoneAPI, self).__init__()
 
-        def put(self, task_id):
-                """Mark task as done by task_id."""
-                task = tasks[task_id]
-                args = self.reqparse.parse_args()
-                args = {
-                        'done': True,
-                }
-                for key in args.keys():
-                    if args[key] is not None:
-                        task[key] = args[key]
-                tasks[task_id] = task
-                return jsonify({'task': task})
+
+
+        # def __init__(self):
+        #         """Constructor: Handle Arguments."""
+        #         self.reqparse = reqparse.RequestParser()
+        #         self.reqparse.add_argument('done', type=bool, default=True)
+        #         super(MarkTaskAsDoneAPI, self).__init__()
+        #
+        # def put(self, task_id):
+        #     """Update a task by task_id method."""
+        #     task = tasks[task_id]
+        #     args = self.reqparse.parse_args()
+        #     task['done'] = True
+        #     tasks[task_id] = task
+        #     return jsonify({'task': task})
 
 
 api.add_resource(UserAPI, '/users', endpoint='user')

@@ -1,8 +1,7 @@
 #!environment/bin/python3
-from flask import request, jsonify
-from flask_restful import Resource, abort, reqparse
-from flask_login import current_user, login_user
-from app import app, api, auth
+from flask import jsonify
+from flask_restful import Resource, reqparse
+from app import app, api
 
 
 users = {
@@ -52,8 +51,6 @@ class UserAPI(Resource):
 
 class TaskListAPI(Resource):
     """All tasks endpoint."""
-
-   #decorators = [auth.login_required]
 
     def __init__(self):
         """Constructor: Handle Arguments."""

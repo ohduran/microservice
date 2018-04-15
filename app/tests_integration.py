@@ -1,11 +1,11 @@
 #!environment/bin/python3
 from requests import put, get, post, delete
+from requests.auth import HTTPBasicAuth
 
+auth = HTTPBasicAuth("alvaro", "python")
 
-proxies = {"http": "http://alvaro:python"}
-
-r = get('http://127.0.0.1:5000/tasks', proxies=proxies)
-print(r.json())
+r = get('http://127.0.0.1:5000/tasks', auth=auth)
+print(r.status_code)
 # """ GET tasks"""
 # start_get = get('http://127.0.0.1:5000/tasks', auth=('alvaro', 'python')).json()
 # print("GET TASKS -", start_get)

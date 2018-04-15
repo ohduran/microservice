@@ -1,12 +1,12 @@
 #!environment/bin/python3
 import unittest
-import os
 from random import choices
 from string import ascii_uppercase
 
 from requests import put, get, post, delete
-from config import basedir
-from app import app
+from requests.auth import HTTPBasicAuth
+
+auth = HTTPBasicAuth("alvaro", "python")
 
 
 class UnitTestCase(unittest.TestCase):
@@ -25,7 +25,7 @@ class UnitTestCase(unittest.TestCase):
 
     def test_Get_Tasks(self):
         """Get tasks."""
-        r = get('http://127.0.0.1:5000/tasks')
+        r = get('http://127.0.0.1:5000/tasks', auth=auth)
 
         self.assertEqual(r.status_code, 200)
         self.assertIsInstance(r.json(), dict)
@@ -36,7 +36,7 @@ class UnitTestCase(unittest.TestCase):
                 'title': 'newest task',
                 'description': 'Description of the task',
         }
-        r = post('http://127.0.0.1:5000/tasks', data=new_task)
+        r = post('http://127.0.0.1:5000/tasks', data=new_task, auth=auth)
         task_result = r.json()['task']
         self.assertEqual(r.status_code, 200)
         self.assertIsInstance(r.json(), dict)
@@ -45,10 +45,10 @@ class UnitTestCase(unittest.TestCase):
 
     def test_get_a_task(self):
         """Get a task by task_id."""
-        r_all = get('http://127.0.0.1:5000/tasks').json()
+        r_all = get('http://127.0.0.1:5000/tasks', auth=auth).json()
         expected_task = r_all['1']
 
-        r = get('http://127.0.0.1:5000/tasks/1')
+        r = get('http://127.0.0.1:5000/tasks/1', auth=auth)
         task_result = r.json()['task']
 
         self.assertEqual(r.status_code, 200)
@@ -61,7 +61,7 @@ class UnitTestCase(unittest.TestCase):
 
     def test_put_a_task(self):
             """Update a task by task_id."""
-            r_task = get('http://127.0.0.1:5000/tasks/1')
+            r_task = get('http://127.0.0.1:5000/tasks/1', auth=auth)
             before_task = r_task.json()['task']
 
             after_task = {
@@ -69,7 +69,7 @@ class UnitTestCase(unittest.TestCase):
                     'description': ''.join(choices(ascii_uppercase, k=10)),
             }
 
-            r = put('http://127.0.0.1:5000/tasks/1', data=after_task)
+            r = put('http://127.0.0.1:5000/tasks/1', data=after_task, auth=auth)
             task_result = r.json()['task']
 
             self.assertEqual(r.status_code, 200)
@@ -81,15 +81,15 @@ class UnitTestCase(unittest.TestCase):
 
     def test_delete_a_task(self):
             """Delete a task by task_id."""
-            r_all_before = get('http://127.0.0.1:5000/tasks').json()
+            r_all_before = get('http://127.0.0.1:5000/tasks', auth=auth).json()
             keys_before = sorted([int(key) for key in r_all_before])
 
-            r = delete('http://127.0.0.1:5000/tasks/' + str(keys_before[-1]))
+            r = delete('http://127.0.0.1:5000/tasks/' + str(keys_before[-1]), auth=auth)
 
             self.assertEqual(r.status_code, 200)
             self.assertEqual(r.json(), "")
 
-            r_all_after = get('http://127.0.0.1:5000/tasks').json()
+            r_all_after = get('http://127.0.0.1:5000/tasks', auth=auth).json()
             keys_after = sorted([int(key) for key in r_all_after])
 
             self.assertEqual(len(keys_after), len(keys_before) - 1)
@@ -99,17 +99,17 @@ class UnitTestCase(unittest.TestCase):
 
     def test_mark_a_task_as_done(self):
             """Mark a task by task_id as done."""
-            r_get_before = get('http://127.0.0.1:5000/tasks/1')
+            r_get_before = get('http://127.0.0.1:5000/tasks/1', auth=auth)
             task_result_before = r_get_before.json()['task']
 
             self.assertFalse(task_result_before['done'])
 
             r = put('http://127.0.0.1:5000/markasdone/1',
-                    data=dict(done=True))
+                    data=dict(done=True), auth=auth)
             self.assertEqual(r.status_code, 200)
             self.assertIsInstance(r.json(), dict)
 
-            r_get_after = get('http://127.0.0.1:5000/tasks/1')
+            r_get_after = get('http://127.0.0.1:5000/tasks/1', auth=auth)
             task_result_after = r_get_after.json()['task']
 
             self.assertTrue(task_result_after['done'])

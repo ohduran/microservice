@@ -1,24 +1,10 @@
 #!environment/bin/python3
-from flask import jsonify, g
+from flask import jsonify
 from flask_restful import Resource, reqparse
-from flask_httpauth import HTTPBasicAuth
-from app import app, api
+
+from app import app, api, auth
 
 users = {'alvaro': 'python'}
-auth = HTTPBasicAuth()
-
-
-@auth.verify_password
-def verify_password(username, password):
-    try:
-        stored_password = users[username]
-        if password == stored_password:
-            g.user = username
-            return True
-        return False
-    except KeyError:
-        return False
-
 
 tasks = {
      1: {
@@ -36,29 +22,16 @@ tasks = {
 }
 
 
-class UserAPI(Resource):
-    """User endpoint."""
-
-    def __init__(self):
-        """Constructor: Handle Arguments."""
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('username', type=str,  required=True,
-                                   help='No username provided')
-        self.reqparse.add_argument('password', type=str,  required=True,
-                                   help='No password provided')
-        super(UserAPI, self).__init__()
-
-    def put(self, id):
-        """Authenticate."""
-        pass
-
-    def post(self, id):
-        """Put method."""
-        pass
-
-    def delete(self, id):
-        """Delete method."""
-        pass
+@auth.verify_password
+def verify_password(username, password):
+        """Password verification for HTTP Basic Auth protocol."""
+        try:
+                stored_password = users[username]
+                if password == stored_password:
+                                return True
+                return False
+        except KeyError:
+                return False
 
 
 class TaskListAPI(Resource):
@@ -79,6 +52,7 @@ class TaskListAPI(Resource):
         """Get ALL tasks method."""
         return jsonify(tasks)
 
+    @auth.login_required
     def post(self):
         """Post a new task method."""
         args = self.reqparse.parse_args()
@@ -91,8 +65,6 @@ class TaskListAPI(Resource):
 class TaskAPI(Resource):
     """Particular task endpoint."""
 
-    #decorators = [auth.login_required]
-
     def __init__(self):
         """Constructor: Handle Arguments."""
         self.reqparse = reqparse.RequestParser()
@@ -101,11 +73,13 @@ class TaskAPI(Resource):
         self.reqparse.add_argument('done', type=bool, default=False)
         super(TaskAPI, self).__init__()
 
+    @auth.login_required
     def get(self, task_id):
         """Get task by task_id method."""
         task = tasks[task_id]
         return jsonify({'task': task})
 
+    @auth.login_required
     def put(self, task_id):
         """Update a task by task_id method."""
         task = tasks[task_id]
@@ -116,6 +90,7 @@ class TaskAPI(Resource):
         tasks[task_id] = task
         return jsonify({'task': task})
 
+    @auth.login_required
     def delete(self, task_id):
         """Delete a task with task_id method."""
         del tasks[task_id]
@@ -132,11 +107,10 @@ class MarkTaskAsDoneAPI(TaskAPI):
                 super(MarkTaskAsDoneAPI, self).__init__()
 
 
-api.add_resource(UserAPI, '/users', endpoint='user')
 api.add_resource(TaskListAPI, '/tasks', endpoint='all_tasks')
 api.add_resource(TaskAPI, '/tasks/<int:task_id>', endpoint='task')
 api.add_resource(TaskAPI, '/markasdone/<int:task_id>', endpoint='markasdone')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

@@ -102,9 +102,26 @@ class UnitTestCase(unittest.TestCase):
             keys_after = sorted([int(key) for key in r_all_after])
 
             self.assertEqual(len(keys_after), len(keys_before) - 1)
+
             keys_after.append(keys_before[-1])
-            
             self.assertListEqual(keys_after, keys_before)
+
+    def test_mark_a_task_as_done(self):
+            """Mark a task by task_id as done."""
+            r_get_before = get('http://127.0.0.1:5000/tasks/1')
+            task_result_before = r_get_before.json()['task']
+
+            self.assertFalse(task_result_before['done'])
+
+            r = put('http://127.0.0.1:5000/markasdone/1',
+                    data=dict(done=True))
+            self.assertEqual(r.status_code, 200)
+            self.assertIsInstance(r.json(), dict)
+
+            r_get_after = get('http://127.0.0.1:5000/tasks/1')
+            task_result_after = r_get_after.json()['task']
+
+            self.assertTrue(task_result_after['done'])
 
 
 

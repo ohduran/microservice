@@ -1,13 +1,25 @@
 #!environment/bin/python3
-from flask import jsonify
+from flask import jsonify, g
 from flask_restful import Resource, reqparse
+from flask_httpauth import HTTPBasicAuth
 from app import app, api
 
+users = {'alvaro': 'python'}
+auth = HTTPBasicAuth()
 
-users = {
-    'alvaro': 'duran',
-    'admin': 'sudo',
-}
+
+@auth.verify_password
+def verify_password(username, password):
+    try:
+        stored_password = users[username]
+        if password == stored_password:
+            g.user = username
+            return True
+        return False
+    except KeyError:
+        return False
+
+
 tasks = {
      1: {
         'task_id': 1,
@@ -62,6 +74,7 @@ class TaskListAPI(Resource):
         self.reqparse.add_argument('done', type=bool, default=False)
         super(TaskListAPI, self).__init__()
 
+    @auth.login_required
     def get(self):
         """Get ALL tasks method."""
         return jsonify(tasks)

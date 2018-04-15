@@ -1,6 +1,6 @@
 # Microservice
 ## Check
-See the [Comments](docs/Comments.md) file for a detailed explanation on how this project works.
+See the [Comments](docs/Comments.md) section for a detailed explanation on how this project works.
 
 ## Instructions
 Build an API service in Flask to manage a simple To-Do list.

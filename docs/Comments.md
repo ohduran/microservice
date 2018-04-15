@@ -5,7 +5,7 @@ The task of designing a web service or API that adheres to the REST guidelines i
 
 We have built a To-Do list app that will be used in a local environment. To run, simply activate the virtual environment and then run the app by doing:
 
-```python
+```shell
 source environment/bin/activate
 export FLASK_APP=run.py
 flask run

@@ -13,4 +13,9 @@ flask run
 
 After the server initializes, it will wait for client connections. The output indicates that the server is running on localhost IP address.
 
-Check out the tests_unittest.py and see that there is a quick and realiable proof that every element of the code works as intended.
+Check out the tests_unittest.py and see that there is a quick and realiable proof that every element of the code works as intended. You can run this on a different Terminal by cd the folder and then doing:
+
+```shell
+source environment/bin/activate
+python tests_unittest.py
+```

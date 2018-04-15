@@ -1,4 +1,8 @@
 # Microservice
+## Check
+See the [Comments](docs/Comments.md) file for a detailed explanation on how this project works.
+
+## Instructions
 Build an API service in Flask to manage a simple To-Do list.
 
 The application provides APIs only. There is no web UI or client application for this service, only a stand alone service with RESTful APIs. The application must be able to:

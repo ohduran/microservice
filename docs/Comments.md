@@ -1,5 +1,5 @@
 # Comments
-In this project we have developed a RESTful web service using Python and the Flask microframework, using Flask-RESTful, a Flask extension that simplifies the creation of APIs. A curated list of any libraries and frameworks used can be found on the [requirements](requirements.txt) file.
+In this project we have developed a RESTful web service using Python and the Flask microframework, using Flask-RESTful, a Flask extension that simplifies the creation of APIs. A curated list of any libraries and frameworks used can be found on the [requirements](https://github.com/ohduran/microservice/blob/master/requirements.txt) file.
 
 This project relies on a virtual environment, an isolated folder which contains all the necessary executables to use the packages that the project needs.
 

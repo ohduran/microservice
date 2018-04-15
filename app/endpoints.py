@@ -118,24 +118,8 @@ class MarkTaskAsDoneAPI(TaskAPI):
         def __init__(self):
                 """Constructor: Handle Arguments."""
                 self.reqparse = reqparse.RequestParser()
-                self.reqparse.add_argument('done', type=bool, default=True)
+                self.reqparse.add_argument('done', type=bool)
                 super(MarkTaskAsDoneAPI, self).__init__()
-
-
-
-        # def __init__(self):
-        #         """Constructor: Handle Arguments."""
-        #         self.reqparse = reqparse.RequestParser()
-        #         self.reqparse.add_argument('done', type=bool, default=True)
-        #         super(MarkTaskAsDoneAPI, self).__init__()
-        #
-        # def put(self, task_id):
-        #     """Update a task by task_id method."""
-        #     task = tasks[task_id]
-        #     args = self.reqparse.parse_args()
-        #     task['done'] = True
-        #     tasks[task_id] = task
-        #     return jsonify({'task': task})
 
 
 api.add_resource(UserAPI, '/users', endpoint='user')

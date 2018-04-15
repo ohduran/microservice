@@ -10,3 +10,7 @@ source environment/bin/activate
 export FLASK_APP=run.py
 flask run
 ```
+
+After the server initializes, it will wait for client connections. The output indicates that the server is running on localhost IP address.
+
+Check out the tests_unittest.py and see that there is a quick and realiable proof that every element of the code works as intended.
